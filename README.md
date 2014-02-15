@@ -67,5 +67,5 @@ The remaining numbers:
 
 This sequence is [A005097](http://oeis.org/A005097).
 
-* We call this method __new__ because so far I haven't seen it in the various math books I've been consulting. I'm not claiming this is
+* I call this method __new__ because so far I haven't seen it in the various math books I've been consulting. I'm not claiming this is
 some advanced Number Theory result or anything of the like. If you have seen this method before, please let me know by opening an issue.
