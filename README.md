@@ -42,9 +42,8 @@ Replacing `n` for `kj + (k-1) / 2` we get:
 2kj + k - 1 + 1 =
 2kj + k =
 3kj
+           QED
 ```
-
-**QED**
 
 The numbers that pass this test are kept in the sieve, and then they are returned when collect is called by
 multipling them by 2 and then adding 1.
