@@ -32,7 +32,7 @@ for `n < k < sqrt(2n + 1), n % k != (k-1) / 2` where `%` stands for the modulus 
 
 because if:
 
-`n = kj + (k-1) / 2 => k divides n * 2 + 1 for some j > 0.`
+`n = kj + (k-1) / 2 => k divides 2n + 1 for some j > 0.`
 
 Replacing `n` for `kj + (k-1) / 2` we get:
 
