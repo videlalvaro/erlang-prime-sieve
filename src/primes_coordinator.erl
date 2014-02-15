@@ -67,7 +67,8 @@ keys(Pid) ->
 %% @end
 %%--------------------------------------------------------------------
 init([N]) ->
-    Tree = create_processes(N, gb_trees:empty()),
+    Half = N div 2,
+    Tree = create_processes(Half, gb_trees:empty()),
     {ok, #state{tree = Tree, n = N}}.
 
 %%--------------------------------------------------------------------
@@ -161,7 +162,7 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 
 create_processes(N, Tree) ->
-    create_processes(1, N, Tree).
+    create_processes(2, N, Tree).
 
 create_processes(N, N, Tree) ->
     insert_node(N, Tree);
