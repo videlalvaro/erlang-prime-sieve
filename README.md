@@ -24,24 +24,24 @@ The idea behind this program is that each number will be running on its own Erla
 
 The sieve method uses the following property:
 
-If `2*n + 1` is Prime, then `n` can't be congruent to `(k-1)/2 modulo k`, for some `k > n`.
+If `2n + 1` is Prime, then `n` can't be congruent to `(k-1)/2 modulo k`, for some `k > n`.
 
 More specifically:
 
-for `n < k < sqrt(n * 2 + 1), n % k != (k-1) / 2` where `%` stands for the modulus operation.
+for `n < k < sqrt(2n + 1), n % k != (k-1) / 2` where `%` stands for the modulus operation.
 
 because if:
 
-`n = k*j + (k-1) / 2 => k divides n * 2 + 1 for some j > 0.`
+`n = kj + (k-1) / 2 => k divides n * 2 + 1 for some j > 0.`
 
-Replacing `n` for `k*j + (k-1) / 2` we get:
+Replacing `n` for `kj + (k-1) / 2` we get:
 
 ```
-2 * (k*j + ((k-1)/2)) + 1 =
-2*k*j + 2 * ((k - 1)/2) + 1 =
-2*k*j + k - 1 + 1 =
-2*k*j + k =
-3k*j
+2(kj + ((k-1)/2)) + 1 =
+2kj + 2((k - 1)/2) + 1 =
+2kj + k - 1 + 1 =
+2kj + k =
+3kj
 ```
 
 **QED**
