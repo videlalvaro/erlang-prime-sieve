@@ -162,7 +162,7 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 
 create_processes(N, Tree) ->
-    create_processes(2, N, Tree).
+    create_processes(1, N, Tree).
 
 create_processes(N, N, Tree) ->
     insert_node(N, Tree);
