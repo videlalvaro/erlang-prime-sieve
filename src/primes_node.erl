@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%%% @author Alvaro Videla <avidela@avidela.local>
+%%% @author Alvaro Videla
 %%% @copyright (C) 2014, Alvaro Videla
 %%% @doc
 %%%
