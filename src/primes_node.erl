@@ -107,9 +107,10 @@ handle_call(_Request, _From, State) ->
 handle_cast(maybe_filter, #state{k = K, coord = Cid} = State) ->
     case internal_maybe_filter(?START, K, round(math:sqrt(K*2+1))) of
         true ->
-            primes_coordinator:delete(Cid, K),
+            primes_coordinator:collect(Cid, {false, K}),
             {stop, normal, State};
         false ->
+            primes_coordinator:collect(Cid, {true, K}),
             {noreply, State}
     end;
 

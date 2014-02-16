@@ -11,9 +11,9 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/1]).
+-export([start_link/2]).
 
--export([delete/2, collect/1, keys/1]).
+-export([collect/2]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -21,7 +21,7 @@
 
 -define(SERVER, ?MODULE).
 
--record(state, {tree, n}).
+-record(state, {n, wait, seen = 0, values = [], parent}).
 
 %%%===================================================================
 %%% API
@@ -34,17 +34,11 @@
 %% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
 %% @end
 %%--------------------------------------------------------------------
-start_link(N) ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [N], []).
+start_link(Parent, N) ->
+    gen_server:start_link({local, ?SERVER}, ?MODULE, [Parent, N], []).
 
-delete(Pid, K) ->
-    gen_server:cast(Pid, {delete, K}).
-
-collect(Pid) ->
-    gen_server:call(Pid, {collect}).
-
-keys(Pid) ->
-    gen_server:call(Pid, {keys}).
+collect(Pid, Val) ->
+    gen_server:cast(Pid, {collect, Val}).
 
 
 %%%===================================================================
@@ -62,10 +56,10 @@ keys(Pid) ->
 %%                     {stop, Reason}
 %% @end
 %%--------------------------------------------------------------------
-init([N]) ->
+init([Parent, N]) ->
     Half = N div 2,
-    Tree = create_processes(Half, gb_trees:empty()),
-    {ok, #state{tree = Tree, n = N}}.
+    create_processes(Half),
+    {ok, #state{n = N, wait = Half, parent = Parent}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -81,15 +75,6 @@ init([N]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call({collect}, _From, #state{tree = Tree} = State) ->
-    Values = collect_numbers(Tree),
-    Reply = {ok, lists:reverse(Values)},
-    {reply, Reply, State};
-
-handle_call({keys}, _From, #state{tree = Tree} = State) ->
-    Reply = {ok, gb_trees:keys(Tree)},
-    {reply, Reply, State};
-
 handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
@@ -104,9 +89,24 @@ handle_call(_Request, _From, State) ->
 %%                                  {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_cast({delete, K}, #state{tree = Tree} = State) ->
-    Tree2 = gb_trees:delete(K, Tree),
-    {noreply, State#state{tree = Tree2}};
+handle_cast({collect, Val}, #state{wait   = N,
+                                   seen   = S,
+                                   values = Vals,
+                                   parent = P} = State) ->
+    S2 = S+1,
+    case S2 =:= N of
+        true ->
+            Primes = filtermap(
+                       fun({Pred, Num}) ->
+                               {Pred, maybe_make_prime(Num)}
+                       end,
+                       Vals),
+            primes_sieve:show_sieve(P, Primes),
+            {stop, normal, State};
+        false ->
+            {noreply, State#state{seen = S2, values = [Val|Vals]}}
+    end;
+
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
@@ -152,30 +152,24 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
-create_processes(N, Tree) ->
-    create_processes(1, N, Tree).
+create_processes(N) ->
+    create_processes(0, N).
 
-create_processes(N, N, Tree) ->
-    insert_node(N, Tree);
-create_processes(Curr, N, Tree) ->
-    Tree2 = insert_node(Curr, Tree),
-    create_processes(Curr+1, N, Tree2).
+create_processes(N, N) ->
+    ok;
+create_processes(Curr, N) ->
+    primes_node:start_link(Curr+1, self()),
+    create_processes(Curr+1, N).
 
-insert_node(K, Tree) ->
-    {ok, Pid} = primes_node:start_link(K, self()),
-    gb_trees:insert(K, Pid, Tree).
-
-collect_numbers(Tree) ->
-    collect_numbers(gb_trees:iterator(Tree), []).
-
-collect_numbers(Iter, Acc) ->
-    case gb_trees:next(Iter) of
-        none ->
-            Acc;
-        {_Key, Pid, Iter2} ->
-            {ok, Value} = primes_node:value(Pid),
-            collect_numbers(Iter2, [make_prime(Value)|Acc])
-    end.
-
-make_prime(K) ->
+maybe_make_prime(K) ->
     K * 2 + 1.
+
+%% adapted from erlang.org since lists:filtermap appears only on new
+%% versions of Erlang
+filtermap(Fun, List1) ->
+    lists:foldr(fun(Elem, Acc) ->
+                        case Fun(Elem) of
+                            {true, Value} -> [Value|Acc];
+                            {false, _} -> Acc
+                        end
+                end, [], List1).
