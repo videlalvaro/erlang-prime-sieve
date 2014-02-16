@@ -6,16 +6,7 @@ Usage:
 
 ```erlang
 %% in this example the sieve of primes numbers will run from 1 to 1001 max.
-{ok, Pid} = primes_coordinator:start_link(1000).
-
-%% asynchrnously build the sieve:
-primes_coordinator:run(Pid).
-
-%% obtain the sieve:
-{ok, Sieve} = primes_coordinator:collect(Pid).
-
-%% print the sieve:
-io:format("~p~n", [Sieve]).
+primes_sieve:start(1000).
 ```
 
 The idea behind this program is that each number will be running on its own Erlang process and it will know how to eliminate itself from the sieve.
