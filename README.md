@@ -46,6 +46,32 @@ multipling them by 2 and then adding 1.
 Since I'm not a professional matematician we wary of this method, since so far I haven't seen a sieve produced
 using these properties of numbers.
 
+## Algorithm ##
+
+Algorithm to check if an `n` would be a candidate for making `n*2+1=p` where `p` stands for some prime number.
+This uses the algorithm notation introduced by Knuth in TAOCP.
+
+```
+S1. [Initialize] Set k <- 3, res <- (k-1)/2, t <- n.
+S2. [Is t lesser than k?] if t < k, terminate. n is candidate.
+S3. [Is k greater than sqrt(2t+1)?] if k > sqrt(2*t+1), terminate, n is candidate.
+S4. [Is t congruent to res?] if t % k == res, terminate. n is not a candidate.
+S5. [Recycle] Set k <- k + 2, res <- res + 1, and go back to S2.
+```
+
+Or in another notation presented by Knuth in TAOCP:
+
+Here `n` is the number we want to test, n > 0, k >= 3, r > 0. The return value will be `n` when `n` is a candidate or
+`-1` when `n` is not.
+
+```
+f((n)) = (n, 3, 1, 1);
+f((n, k, r, 1)) = (n)  if n < k, (n, k, r, 2) otherwise;
+f((n, k, r, 2)) = (n)  if k > sqrt(2*k+1), (n, k, r, 3) otherwise;
+f((n, k, r, 3)) = (-1) if n % k == r, (n, k, r, 4) otherwise;
+f((n, k, r, 4)) = (n, k+2, r+1, 1).
+```
+
 ## Example ##
 
 Write the numbers from 2 to 100 and then scratch of those `n` that satisfy: `n % 3 == 1` and are greather than `3`.
