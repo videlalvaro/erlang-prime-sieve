@@ -49,7 +49,7 @@ using these properties of numbers.
 ## Example ##
 
 Write the numbers from 2 to 100 and then scratch of those `n` that satisfy: `n % 3 == 1` and are greather than `3`.
-So [4, 7, 10, 13 ... 100] will be removed.
+So `[4, 7, 10, 13 ... 100]` will be removed.
 
 Then add `2` to `3` getting `5` and then add `1` to `1` getting `2`. This means now you will scratch those `n`
 that satisfy: `n % 5 == 2`.
