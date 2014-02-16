@@ -48,7 +48,7 @@ using these properties of numbers.
 
 ## Algorithm ##
 
-Algorithm to check if an `n` would be a candidate for making `n*2+1=p` where `p` stands for some prime number.
+Algorithm to check if _n_ would be a candidate for making _n*2+1=p_ where _p_ stands for some prime number.
 This uses the algorithm notation introduced by Knuth in TAOCP.
 
 ```
@@ -61,8 +61,8 @@ S5. [Recycle] Set k <- k + 2, res <- res + 1, and go back to S2.
 
 Or in another notation presented by Knuth in TAOCP:
 
-Here `n` is the number we want to test, n > 0, k >= 3, r > 0. The return value will be `n` when `n` is a candidate or
-`-1` when `n` is not.
+Here _n_ is the number we want to test, _n > 0_, _k >= 3_, _r > 0_. The return value will be _n_ when _n_ is a candidate or
+_-1_ when _n_ is not.
 
 ```
 f((n)) = (n, 3, 1, 1);
