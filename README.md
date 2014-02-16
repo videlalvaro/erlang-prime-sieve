@@ -11,6 +11,10 @@ primes_sieve:start(1000).
 
 The idea behind this program is that each number will be running on its own Erlang process and it will know how to eliminate itself from the sieve.
 
+All Erlang process will cooperate in creating the sieve and together they will arrive to the solution.
+
+Yes, I know, one problably shouldn't be using Erlang for this anyway.
+
 ## The sieve method ##
 
 The sieve method uses the following property:
