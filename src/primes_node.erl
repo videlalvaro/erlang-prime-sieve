@@ -13,13 +13,14 @@
 %% API
 -export([start_link/2]).
 
--export([maybe_filter/3, value/1]).
+-export([value/1]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
 -define(SERVER, ?MODULE).
+-define(START, 3).
 
 -record(state, {k, coord}).
 
@@ -37,11 +38,8 @@
 start_link(K, Cid) ->
     gen_server:start_link(?MODULE, [K, Cid], []).
 
-maybe_filter(Pid, Curr, Max) ->
-    gen_server:cast(Pid, {maybe_filter, Curr, Max}).
-
 value(Pid) ->
-    gen_server:call(Pid, {value}).
+    gen_server:call(Pid, value).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -59,6 +57,7 @@ value(Pid) ->
 %% @end
 %%--------------------------------------------------------------------
 init([K, Cid]) ->
+    gen_server:cast(self(), maybe_filter),
     {ok, #state{k = K, coord = Cid}}.
 
 %%--------------------------------------------------------------------
@@ -75,7 +74,7 @@ init([K, Cid]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call({value}, _From, #state{k = K} = State) ->
+handle_call(value, _From, #state{k = K} = State) ->
     {reply, {ok, K}, State};
 
 handle_call(_Request, _From, State) ->
@@ -92,8 +91,21 @@ handle_call(_Request, _From, State) ->
 %%                                  {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_cast({maybe_filter, N, Max}, #state{k = K, coord = Cid} = State) ->
-    case internal_maybe_filter(K, N, Max) of
+
+%%--------------------------------------------------------------------
+%% We need to prove that K*2 + 1 is not divisible by some N
+%% therefore we just test up to sqrt(K*2+1).
+%%
+%% If the process fails on of the tests, then it will ask the
+%% primes_coordinator to remove it from their dictionary, and
+%% then the process will stop.
+%%
+%% With this method, numbers that are not candidate for creating a prime
+%5 are discarded.
+%%
+%%--------------------------------------------------------------------
+handle_cast(maybe_filter, #state{k = K, coord = Cid} = State) ->
+    case internal_maybe_filter(?START, K, round(math:sqrt(K*2+1))) of
         true ->
             primes_coordinator:delete(Cid, K),
             {stop, normal, State};
@@ -146,7 +158,9 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
-internal_maybe_filter(K, N, Max) when N < Max->
+%% We only need to run the test when K is greater
+%% than the number we are testing against.
+internal_maybe_filter(N, K, Max) when N < Max ->
     case K > N of
         true ->
             Residue = N div 2,
@@ -154,13 +168,13 @@ internal_maybe_filter(K, N, Max) when N < Max->
                 true ->
                     true;
                 false ->
-                    internal_maybe_filter(K, N+2, Max)
+                    internal_maybe_filter(N+2, K, Max)
             end;
         false ->
             false
     end;
 
-internal_maybe_filter(K, N, _Max) ->
+internal_maybe_filter(N, K, _Max) ->
     case K > N of
         true ->
             Residue = N div 2,

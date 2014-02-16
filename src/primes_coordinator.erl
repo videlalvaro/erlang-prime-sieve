@@ -13,14 +13,13 @@
 %% API
 -export([start_link/1]).
 
--export([run/1, delete/2, collect/1, keys/1]).
+-export([delete/2, collect/1, keys/1]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
 -define(SERVER, ?MODULE).
--define(START, 3).
 
 -record(state, {tree, n}).
 
@@ -37,9 +36,6 @@
 %%--------------------------------------------------------------------
 start_link(N) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [N], []).
-
-run(Pid) ->
-    gen_server:call(Pid, {run}).
 
 delete(Pid, K) ->
     gen_server:cast(Pid, {delete, K}).
@@ -85,11 +81,6 @@ init([N]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call({run}, _From, #state{tree = Tree, n = N} = State) ->
-    call_nodes(N, Tree),
-    Reply = ok,
-    {reply, Reply, State};
-
 handle_call({collect}, _From, #state{tree = Tree} = State) ->
     Values = collect_numbers(Tree),
     Reply = {ok, lists:reverse(Values)},
@@ -174,20 +165,6 @@ insert_node(K, Tree) ->
     {ok, Pid} = primes_node:start_link(K, self()),
     gb_trees:insert(K, Pid, Tree).
 
-call_nodes(N, Tree) ->
-    SQRT = math:sqrt(N*2),
-    iterate_nodes(?START, round(SQRT), gb_trees:iterator(Tree)).
-
-iterate_nodes(Curr, Max, Iter) ->
-    case gb_trees:next(Iter) of
-        none ->
-            ok;
-        {_Key, Pid, Iter2} ->
-            primes_node:maybe_filter(Pid, Curr, Max),
-            iterate_nodes(Curr, Max, Iter2)
-    end.
-
-
 collect_numbers(Tree) ->
     collect_numbers(gb_trees:iterator(Tree), []).
 
@@ -197,5 +174,8 @@ collect_numbers(Iter, Acc) ->
             Acc;
         {_Key, Pid, Iter2} ->
             {ok, Value} = primes_node:value(Pid),
-            collect_numbers(Iter2, [Value*2+1|Acc])
+            collect_numbers(Iter2, [make_prime(Value)|Acc])
     end.
+
+make_prime(K) ->
+    K * 2 + 1.
