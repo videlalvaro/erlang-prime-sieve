@@ -1,4 +1,4 @@
-# Naive Distributed Prime Numbers Sieve #
+# Naive Parallel Prime Numbers Sieve #
 
 This program calculates prime numbers using a new* mehtod for building a sieve.
 
