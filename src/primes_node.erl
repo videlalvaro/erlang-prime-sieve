@@ -96,9 +96,8 @@ handle_call(_Request, _From, State) ->
 %% We need to prove that K*2 + 1 is not divisible by some N
 %% therefore we just test up to sqrt(K*2+1).
 %%
-%% If the process fails on of the tests, then it will ask the
-%% primes_coordinator to remove it from their dictionary, and
-%% then the process will stop.
+%% Each process will tell the coordinator if it should be included in the
+%% final sieve or not.
 %%
 %% With this method, numbers that are not candidate for creating a prime
 %5 are discarded.
