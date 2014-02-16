@@ -13,6 +13,9 @@ The idea behind this program is that each number will be running on its own Erla
 
 All Erlang process will cooperate in creating the sieve and together they will arrive to the solution.
 
+I got inspired by this paper: [Chemical Computing](http://users.minet.uni-jena.de/~dittrich//p/Dit2005upp.pdf),
+tho I'm not necessarily claiming that I'm implementing that.
+
 Yes, I know, one problably shouldn't be using Erlang for this anyway.
 
 ## The sieve method ##
