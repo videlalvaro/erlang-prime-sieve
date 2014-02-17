@@ -1,6 +1,6 @@
 # Naive Parallel Prime Numbers Sieve #
 
-This program calculates prime numbers using a new* mehtod for building a sieve.
+This program calculates prime numbers using a new* method for building a sieve.
 
 Usage:
 
