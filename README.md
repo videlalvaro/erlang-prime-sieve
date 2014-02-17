@@ -3,7 +3,7 @@
 This program calculates prime numbers using a new* method for building a sieve.
 
 Usage:
-
+˘
 ```erlang
 %% in this example the sieve of primes numbers will run from 1 to 1001 max.
 primes_sieve:start(1000).
@@ -44,7 +44,7 @@ Replacing `n` for `kj + (k-1) / 2` we get:
 ```
 
 The numbers that pass this test are kept in the sieve, and then they are returned when collect is called by
-multipling them by 2 and then adding 1.
+multiplying them by 2 and then adding 1.
 
 Since I'm not a professional mathematician we wary of this method, since so far I haven't seen a sieve produced
 using these properties of numbers.
