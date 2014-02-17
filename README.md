@@ -16,7 +16,7 @@ All Erlang process will cooperate in creating the sieve and together they will a
 I got inspired by this paper: [Chemical Computing](http://users.minet.uni-jena.de/~dittrich//p/Dit2005upp.pdf),
 tho I'm not necessarily claiming that I'm implementing that.
 
-Yes, I know, one problably shouldn't be using Erlang for this anyway.
+Yes, I know, one probably shouldn't be using Erlang for this anyway.
 
 ## The sieve method ##
 
@@ -46,7 +46,7 @@ Replacing `n` for `kj + (k-1) / 2` we get:
 The numbers that pass this test are kept in the sieve, and then they are returned when collect is called by
 multipling them by 2 and then adding 1.
 
-Since I'm not a professional matematician we wary of this method, since so far I haven't seen a sieve produced
+Since I'm not a professional mathematician we wary of this method, since so far I haven't seen a sieve produced
 using these properties of numbers.
 
 ## Algorithm ##
@@ -77,7 +77,7 @@ f((n, k, r, 4)) = (n, k+2, r+1, 1).
 
 ## Example ##
 
-Write the numbers from 2 to 100 and then scratch of those `n` that satisfy: `n % 3 == 1` and are greather than `3`.
+Write the numbers from 2 to 100 and then scratch of those `n` that satisfy: `n % 3 == 1` and are greater than `3`.
 So `[4, 7, 10, 13 ... 100]` will be removed.
 
 Then add `2` to `3` getting `5` and then add `1` to `1` getting `2`. This means now you will scratch those `n`
